@@ -38,3 +38,17 @@ pass params (username,passwoers) thought a form
 create a new instanc eofa user
 try to save the user in the satabase
 - user needs password_digest and session_token
+
+
+we are going to use resource :session , only new create
+
+
+how do we long a suer
+
+a user is logged in if
+user.session_token == session[:session_token]
+
+
+cookies stores the session token on the browser so the server knows who it is
+
+
