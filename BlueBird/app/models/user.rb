@@ -11,7 +11,26 @@
 #  political_affiliation :string
 #
 class User < ApplicationRecord
-  validates :username, :email, presence: true, uniqueness: true
+  validates :username, :email,:session_token presence: true, uniqueness: true
+  validates :password_digest, presence: true
+  validates :password, length: (mininum: 6), allow_nil: true
+
+  attr_reader :password
+
+  before_validation :ensure_session_token
+
+
+  def password=(password)
+    @password = password
+    self.password_digest = BCrypt::Password.create(password)
+  end
+
+  def ensure_session_token
+    self.session_token ||= SecureRandom::urlsafe_base64
+  end
+
+
+
 
   has_many :chirps,
     primary_key: :id,
@@ -24,12 +43,12 @@ class User < ApplicationRecord
     foreign_key: :liker_id,
     class_name: :Like,
     dependent: :destroy
-  
+
   has_many :liked_chirps,
     through: :likes,
     source: :chirp
 
-  
+
   # # DEMO 1: Finder methods
 
   # #Get first user record, use first
@@ -49,7 +68,7 @@ class User < ApplicationRecord
   # User.find_by("username = 'awesome_person'")
   # User.find_by("username = (?)", "awesome_person")
   # User.find_by("username = :username", username: "awesome_person")
-  
+
   # #Find a user by username that does not exist, use find_by
   # User.find_by(username: 'banana')
 
